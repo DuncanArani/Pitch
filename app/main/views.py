@@ -17,7 +17,7 @@ def index():
 
     pickup = Pitch.query.filter_by(category = "Pickup Lines").all()
     about = Pitch.query.filter_by(category = "About You").all()
-    marryme = Pitch.query.filter_by(category = "Marriage Proposal").all()
+    marryme = Pitch.query.filter_by(category = "Interviews").all()
 
  
     if form.validate_on_submit():
@@ -32,7 +32,7 @@ def index():
 
     # flash("You need to be logged in") 
  
-    return render_template('index.html',form = form ,form_comment = form_comment , pickup = pickup,about=about,marryme=marryme)
+    return render_template('index.html',form = form ,form_comment = form_comment , pickup = pickup,about=about,interviews=interviews)
 
 # @main.route('/posting')
 # @login_required
@@ -43,11 +43,11 @@ def index():
 This route will navigate to marriage proposal pitches only .
 Will query the database for pitches from proposal category then pass them to macro for looping
 '''
-@main.route('/pitches/proposal',methods=["GET","POST"])
+@main.route('/pitches/interviews',methods=["GET","POST"])
 @login_required
-def proposal(): 
-    pitches = Pitch.query.filter_by(category = 'Marriage Proposal').all()
-    title = 'Marriage Proposal'
+def interviews(): 
+    pitches = Pitch.query.filter_by(category = 'Interviews').all()
+    title = 'Interviews'
 
     return render_template('pitches.html', title = title ,pitches = pitches )
 
