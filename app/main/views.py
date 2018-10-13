@@ -17,7 +17,7 @@ def index():
 
     pickup = Pitch.query.filter_by(category = "Pickup Lines").all()
     about = Pitch.query.filter_by(category = "About You").all()
-    marryme = Pitch.query.filter_by(category = "Interviews").all()
+    marryme = Pitch.query.filter_by(category = "Marriage Proposal").all()
 
  
     if form.validate_on_submit():
@@ -32,7 +32,7 @@ def index():
 
     # flash("You need to be logged in") 
  
-    return render_template('index.html',form = form ,form_comment = form_comment , pickup = pickup,about=about,interviews=interviews)
+    return render_template('index.html',form = form ,form_comment = form_comment , pickup = pickup,about=about,marryme=marryme)
 
 # @main.route('/posting')
 # @login_required
@@ -45,9 +45,9 @@ Will query the database for pitches from proposal category then pass them to mac
 '''
 @main.route('/pitches/proposal',methods=["GET","POST"])
 @login_required
-def interviews(): 
-    pitches = Pitch.query.filter_by(category = 'interviews').all()
-    title = 'interviews'
+def proposal(): 
+    pitches = Pitch.query.filter_by(category = 'Marriage Proposal').all()
+    title = 'Marriage Proposal'
 
     return render_template('pitches.html', title = title ,pitches = pitches )
 
@@ -125,12 +125,12 @@ def profile_pic(username):
 
     user = User.query.filter_by(username = username).first()
 
-    if 'photo' in request.files:
-        filename = photos.save(request.files['photo'])
-        path = f'static/photos/{filename}'
-        user.profile_pic_path = path 
+    if 'photos' in request.files:
+        filename = photos.save(request.files['photos'])
+        path = f"photos/{filename}"
+        user.profile_pic_path = path
         db.session.commit()
-    return redirect(url_for('main.profile',uname=uname))
+    return redirect(url_for("main.profile",username=username))
 
 
 @main.route('/comments/<int:id>', methods = ['GET','POST'])
