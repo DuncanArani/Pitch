@@ -32,7 +32,7 @@ def index():
 
     # flash("You need to be logged in") 
  
-    return render_template('index.html',form = form ,form_comment = form_comment , pickup = pickup,about=about,interviewme=interviewme)
+    return render_template('index.html',form = form ,form_comment = form_comment , pickup = pickup,about=about,interviews=interviews)
 
 # @main.route('/posting')
 # @login_required
