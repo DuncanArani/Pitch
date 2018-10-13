@@ -15,19 +15,19 @@
     {{ wtf.quick_form(form)  }}
 <hr>
 
-     <!-- the following lines of code will populate all pitches related to marriage proposals on the index -->
-     {% if interviewme %}
+    <!-- the following lines of code will populate all pitches related to marriage proposals on the index -->
+    {% if interviewme %}
+    <hr>
+    <h2 class="card-header" >Start Your Interviews</h2>
+    <hr>
+    <div class="row">
+        {{ macro.displayPitches(interviews)}}
+        </div>
+    {% else %}
         <hr>
-        <h2 class="card-header" >Close your Interviews</h2>
+        <h2 class="card-header" >No interviw pitches yet</h2>
         <hr>
-        <div class="row">
-         {{ macro.displayPitches(interviews)}}
-         </div>
-     {% else %}
-         <hr>
-         <h2 class="card-header" >No interviw pitches yet</h2>
-         <hr>
-     {% endif %}
+    {% endif %}
 
 
 
@@ -67,4 +67,6 @@
 
 
 </div>
+
+
 {% endblock %}
