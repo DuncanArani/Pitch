@@ -45,9 +45,9 @@ Will query the database for pitches from proposal category then pass them to mac
 '''
 @main.route('/pitches/proposal',methods=["GET","POST"])
 @login_required
-def proposal(): 
-    pitches = Pitch.query.filter_by(category = 'Marriage Proposal').all()
-    title = 'Marriage Proposal'
+def interviews(): 
+    pitches = Pitch.query.filter_by(category = 'interviews').all()
+    title = 'interviews'
 
     return render_template('pitches.html', title = title ,pitches = pitches )
 

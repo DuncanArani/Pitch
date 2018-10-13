@@ -16,16 +16,16 @@
 <hr>
 
      <!-- the following lines of code will populate all pitches related to marriage proposals on the index -->
-     {% if marryme %}
+     {% if interviewme %}
         <hr>
-        <h2 class="card-header" >Close your Marriage</h2>
+        <h2 class="card-header" >Close your Interviews</h2>
         <hr>
         <div class="row">
-         {{ macro.displayPitches(marryme)}}
+         {{ macro.displayPitches(interviewme)}}
          </div>
      {% else %}
          <hr>
-         <h2 class="card-header" >No proposals pitches yet</h2>
+         <h2 class="card-header" >No interviw pitches pitches yet</h2>
          <hr>
      {% endif %}
 
@@ -54,7 +54,7 @@
     <!-- the following lines of code will populate all pitches related to describing you on the index -->
     {% if pickup %}
         <hr>
-        <h2 class="card-header" > Use these Irresistible lines on your crush ! </h2>
+        <h2 class="card-header" > Use these Irresistible lines to pass you interviews of all kind ! </h2>
         <hr>
     <div class="row">
         {{ macro.displayPitches(pickup)}}
