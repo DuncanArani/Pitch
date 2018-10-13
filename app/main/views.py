@@ -1,115 +1,166 @@
-from flask import render_template, request, redirect, url_for, abort, flash
-from . import main
-
+from flask import render_template, request, redirect, url_for, abort
 from flask_login import login_required, current_user
-from .forms import PitchForm, UpdateProfile, PostForm, CommentForm
-from ..models import Pitch, User, Comment, Reaction
+from . import main
+from app.models import User, Pitch, Comment
+from .forms import *
 from .. import db, photos
-
-'''
-This routing function fires moment the app loads. 
-'''
+from datetime import datetime
 
 
-@main.route('/', methods=["GET", "POST"])
+import markdown2
+
+
+
+@main.route('/')
 def index():
+    '''
+    View root page function that returns the index page and its data
+    '''
+    title = 'Home - Welcome to The best Pitching Website Online'
 
-    form = PostForm()
-    form_comment = CommentForm()
+    search_pitch = request.args.get('pitch_query')
+    pitches= Pitch.get_all_pitches()  
 
-    pickup = Pitch.query.filter_by(category="Pickup Lines").all()
-    about = Pitch.query.filter_by(category="About You").all()
-    marryme = Pitch.query.filter_by(category="Interviews").all()
+    return render_template('index.html', title = title, pitches= pitches)
+
+#this section consist of the category root functions
+
+@main.route('/inteview/pitches/')
+def interview():
+    '''
+    View root page function that returns the index page and its data
+    '''
+    pitches= Pitch.get_all_pitches()
+    title = 'Home - Welcome to The best Pitching Website Online'  
+    return render_template('interview.html', title = title, pitches= pitches )
+
+@main.route('/pick_up_lines/pitches/')
+def pick_up_line():
+    '''
+    View root page function that returns the index page and its data
+    '''
+    title = 'Pick Up Lines'
+
+    pitches= Pitch.get_all_pitches()
+
+    return render_template('pick_up_lines.html', title = title, pitches= pitches )
+
+@main.route('/promotion/pitches/')
+def promotion():
+    '''
+    View root page function that returns the index page and its data
+    '''
+    title = 'Promotion Pitches'
+
+    pitches= Pitch.get_all_pitches()
+
+    return render_template('promotion.html', title = title, pitches= pitches )
+
+
+@main.route('/product/pitches/')
+def product():
+    '''
+    View root page function that returns the index page and its data
+    '''
+    title = 'Product Pitches'
+    pitches= Pitch.get_all_pitches()
+    return render_template('product.html', title = title, pitches= pitches )
+ 
+#  end of category root functions
+
+@main.route('/pitch/<int:pitch_id>')
+def pitch(pitch_id):
+
+    '''
+    View pitch page function that returns the pitch details page and its data
+    '''
+    found_pitch= pitch(pitch_id)
+    title = pitch_id
+    pitch_comments = Comment.get_comments(pitch_id)
+
+    return render_template('pitch.html',title= title ,found_pitch= found_pitch, pitch_comments= pitch_comments)
+
+@main.route('/search/<pitch_name>')
+def search(pitch_name):
+    '''
+    View function to display the search results
+    '''
+    searched_pitches = search(pitch_name)
+    title = f'search results for {pitch_name}'
+
+    return render_template('search.html',pitches = searched_pitches)
+
+@main.route('/pitch/new/', methods = ['GET','POST'])
+@login_required
+def new_pitch():
+    '''
+    Function that creates new pitches
+    '''
+    form = PitchForm()
+
+
+    if category is None:
+        abort( 404 )
 
     if form.validate_on_submit():
-        pitch = Pitch(pitch=form.pitch.data, user=current_user,
-                      category=form.category.data)
+        pitch= form.content.data
+        category_id = form.category_id.data
+        new_pitch= Pitch(pitch= pitch, category_id= category_id)
 
-        # pitch.save_pitch()
+        new_pitch.save_pitch()
+        return redirect(url_for('main.index'))
 
-        flash('Your pitch has been posted!')
+    return render_template('new_pitch.html', new_pitch_form= form, category= category)
 
-        return redirect(url_for('.index'))
+@main.route('/category/<int:id>')
+def category(id):
+    '''
+    function that returns pitches based on the entered category id
+    '''
+    category = category.query.get(id)
 
-    # flash("You need to be logged in")
+    if category is None:
+        abort(404)
 
-    return render_template('index.html', form=form, form_comment=form_comment, pickup=pickup, about=about, interviews=interviews)
+    pitches_in_category = category(id)
+    return render_template('category.html' ,category= category, pitches= pitches_in_category)
 
-# @main.route('/posting')
-# @login_required
-# def home():
-#     return  render_template('auth/login.html')
-
-
-'''
-This route will navigate to marriage proposal pitches only .
-Will query the database for pitches from proposal category then pass them to macro for looping
-'''
-
-
-@main.route('/pitches/interviews', methods=["GET", "POST"])
+@main.route('/pitch/comments/new/<int:id>',methods = ['GET','POST'])
 @login_required
-def interviews():
-    pitches = Pitch.query.filter_by(category='Interviews').all()
-    title = 'Interviews'
+def new_comment(id):
+    form = CommentsForm()
+    vote_form = UpvoteForm()
+    if form.validate_on_submit():
+        new_comment = Comment(pitch_id =id,comment=form.comment.data,username=current_user.username,votes=form.vote.data)
+        new_comment.save_comment()
+        return redirect(url_for('main.index'))
+    #title = f'{pitch_result.id} review'
+    return render_template('new_comment.html',comment_form=form, vote_form= vote_form)
 
-    return render_template('pitches.html', title=title, pitches=pitches)
-
-
-'''
-A route for pick-up lines page 
-'''
-
-
-@main.route('/pitch/pick-up', methods=["GET", "POST"])
+@main.route('/user/<uname>/update/pic',methods= ['POST'])
 @login_required
-def pick_up():
+def update_pic(uname):
+    user = User.query.filter_by(username = uname).first()
+    if 'photo' in request.files:
+        filename = photos.save(request.files['photo'])
+        path = f'photos/{filename}'
+        user.profile_pic_path = path 
+        db.session.commit()
+    return redirect(url_for('main.profile',uname=uname))
 
-    pitches = Pitch.query.filter_by(category='Pickup Lines').all()
-    title = 'Pickup Lines'
-    return render_template('pitches.html', title=title, pitches=pitches)
-
-
-'''
-A route for pitches of how to best describe yourself in only a minute . 
-'''
-
-
-@main.route('/pitch/describe-yourself', methods=["GET", "POST"])
-@login_required
-def about_you():
-
-    pitches = Pitch.query.filter_by(category='About You').all()
-
-    title = 'About yourself'
-    return render_template('pitches.html', title=title, pitches=pitches)
-
-
-'''
-A route to redirect you to a user's profile
-'''
-
-
-@main.route('/user/<username>')
-@login_required
-def profile(username):
-    user = User.query.filter_by(username=username).first()
+@main.route('/user/<uname>')
+def profile(uname):
+    user = User.query.filter_by(username = uname).first()
 
     if user is None:
         abort(404)
 
-    return render_template("profile/profile.html", user=user)
+    return render_template("profile/profile.html", user = user)
 
-
-'''
-A route to take you to edit user's profile 
-'''
-
-
-@main.route('/user/<username>/update', methods=["POST", "GET"])
-def update_profile(username):
-    user = User.query.filter_by(username=username).first()
-
+@main.route('/user/<uname>/update',methods = ['GET','POST'])
+@login_required
+def update_profile(uname):
+    user = User.query.filter_by(username = uname).first()
     if user is None:
         abort(404)
 
@@ -121,60 +172,61 @@ def update_profile(username):
         db.session.add(user)
         db.session.commit()
 
-        return redirect(url_for('.profile', username=user.username))
+        return redirect(url_for('.profile',uname=user.username))
+    
+    return render_template('profile/update.html',form =form)
 
-    return render_template("profile/update_profile.html", form=form)
+@main.route('/view/comment/<int:id>')
+def view_comments(id):
+    '''
+    Function that returs  the comments belonging to a particular pitch
+    '''
+    comments = Comment.get_comments(id)
+    return render_template('view_comments.html',comments = comments, id=id)
 
+@main.route('/onepitch/<int:id>', methods=['GET', 'POST'])
+def one_pitch(id):
 
-'''
-A routing function for uploading profile pictures into our app .
-'''
+    pitch = Pitch.query.get(id)
+    form = CommentForm()
+    pitch = Pitch.query.filter_by(id=id).first()
 
+    if form.validate_on_submit():
+        # comment instance
+        new_comment = Comment(
+            ratings=0,
+            like=0,
+            dislike=0,
+            content=form.content.data,
+            time=datetime.utcnow(),
+            comments=pitch,
+            comment=current_user)
 
-@main.route('/profile/<username>/pic/upload', methods=["POST", "GET"])
-def profile_pic(username):
-
-    user = User.query.filter_by(username=username).first()
-
-    if 'photos' in request.files:
-        filename = photos.save(request.files['photos'])
-        path = f"photos/{filename}"
-        user.profile_pic_path = path
-        db.session.commit()
-    return redirect(url_for("main.profile", username=username))
-
-
-@main.route('/comments/<int:id>', methods=['GET', 'POST'])
-@login_required
-def comment(id):
-    comments = Comment.query.filter_by(pitch_id=id).all()
-    the_pitch = Pitch.query.filter_by(id=id).first()
-
-    form_comment = CommentForm()
-
-    if form_comment.validate_on_submit():
-        comment = form_comment.comment.data
-        new_comment = Comment(comment=comment, pitch_id=the_pitch.id)
+        # save comment
         db.session.add(new_comment)
         db.session.commit()
 
-        # return redirect(url_for('.comment'))
-    return render_template('comments.html', comments=comments, pitch=the_pitch, form_comment=form_comment)
+    comments = pitch.comments_id
+
+    return render_template('viewpitch.html', pitch=pitch, id=id, comment_form=form, comments=comments)
 
 
-'''
-Whenever a like button is clicked on the app , this method is gonna run . takes id of the pitch and 
-will add 1 whenever clicked . 
-'''
+# @main.route('/like/<pitch_id>')
+# def like (pitch_id):
+#     print('% liked' % pitch_id)
 
 
-@main.route('/liked/<int:id>')
-def like(id):
+# @main.route('/dislike/<pitch_id>')
+# def dislike(pitch_id):
+#     print('% disliked' % pitch_id)
 
-    # # reaction = Reaction.query.filter_by(id=id).update({{"like":"1"}})
-    # reation = Reaction.query.filter_by(id=id).first()
 
-    # db.session.add(reaction)
-    # db.session.commit()
+@main.route('/test/<int:id>')  
+def test(id):
+    '''
+    this is route for basic testing
+    '''
+    pitch =Pitch.query.filter_by(id=1).first()
+    return render_template('test.html',pitch= pitch)
 
-    return render_template('index.html')
+
