@@ -5,7 +5,7 @@ class Config:
     General configuration parent class
     '''
     SECRET_KEY = 'os.environ.get'
-    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://dunco:dunco@localhost/pitch'
+    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://dunco:dunco@localhost/pitch2'
     UPLOADED_PHOTOS_DEST ='app/static/photos'
     
     #  email configurations
@@ -22,7 +22,7 @@ class Config:
     SIMPLEMDE_USE_CDN = True
 
 class TestConfig(Config):
-    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://dunco:dunco@localhost/pitch_test'
+    SQLALCHEMY_DATABASE_URI = 'postgresql+psycopg2://dunco:dunco@localhost/pitch2_test'
 
 
 class ProdConfig(Config):
