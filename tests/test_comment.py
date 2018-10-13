@@ -7,7 +7,7 @@ class CommentTest(unittest.TestCase):
     Test Class to test the behaviour of the Pitch class
     '''
     def setUp(self):
-        self.user_Dunco = User(username = 'Dunco',password = 'dunco', email = 'duncanarani254@gmail.com')
+        self.user_Dunco = User(username = 'Dunco',password = 'dunco', email = 'aruncodunco@gmail.com')
         self.new_comment = Comment(pitch_id=12345,pitch_title='Review for movies',image_path="https://image.tmdb.org/t/p/w500/jdjdjdjn",movie_review='best series ever watched',user = self.user_Dunco ) 
 
     def tearDown(self):
