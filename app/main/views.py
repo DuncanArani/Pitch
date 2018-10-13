@@ -17,7 +17,7 @@ def index():
 
     pickup = Pitch.query.filter_by(category = "Pickup Lines").all()
     about = Pitch.query.filter_by(category = "About You").all()
-    marryme = Pitch.query.filter_by(category = "Marriage Proposal").all()
+    marryme = Pitch.query.filter_by(category = "Interviews").all()
 
  
     if form.validate_on_submit():
@@ -32,7 +32,7 @@ def index():
 
     # flash("You need to be logged in") 
  
-    return render_template('index.html',form = form ,form_comment = form_comment , pickup = pickup,about=about,marryme=marryme)
+    return render_template('index.html',form = form ,form_comment = form_comment , pickup = pickup,about=about,interviewme=interviewme)
 
 # @main.route('/posting')
 # @login_required
@@ -125,12 +125,12 @@ def profile_pic(username):
 
     user = User.query.filter_by(username = username).first()
 
-    if 'photos' in request.files:
-        filename = photos.save(request.files['photos'])
-        path = f"photos/{filename}"
-        user.profile_pic_path = path
+    if 'photo' in request.files:
+        filename = photos.save(request.files['photo'])
+        path = f'static/photos/{filename}'
+        user.profile_pic_path = path 
         db.session.commit()
-    return redirect(url_for("main.profile",username=username))
+    return redirect(url_for('main.profile',uname=uname))
 
 
 @main.route('/comments/<int:id>', methods = ['GET','POST'])

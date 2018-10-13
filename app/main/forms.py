@@ -3,7 +3,7 @@ from wtforms import StringField,TextAreaField,SubmitField,SelectField
 from wtforms.validators import Required ,DataRequired
 
 class PitchForm(FlaskForm):
-    pitch = TextAreaField('Movie review', validators=[Required()])
+    pitch = TextAreaField('Pitch review', validators=[Required()])
     submit = SubmitField('Submit')
 
 
@@ -14,7 +14,7 @@ class UpdateProfile(FlaskForm):
 
 class PostForm(FlaskForm):
     pitch = TextAreaField(("What's on your mind ?"), validators=[DataRequired()])
-    category = SelectField('Category', choices=[('Pickup Lines','Pickup Lines'),('About You','About You'),('Marriage Proposal','Marriage Proposal')])
+    category = SelectField('Category', choices=[('Pickup Lines','Pickup Lines'),('About You','About You'),('Interviews','Interviews')])
 
     submit = SubmitField(('post'))
 
