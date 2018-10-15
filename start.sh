@@ -1,6 +1,6 @@
 
-export SECRET_KEY=os.environ.get
-export SQLALCHEMY_DATABASE_URI=postgresql+psycopg2://dunco:dunco@localhost/pitch2
+export SECRET_KEY=12345yeyrpl[4]
+export DATABASE_URL='postgresql+psycopg2://dunco:dunco@localhost/pitch3'
 export MAIL_USERNAME=aruncodunco@gmail.com
 export MAIL_PASSWORD=31740141
 
