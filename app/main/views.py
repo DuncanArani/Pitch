@@ -184,31 +184,31 @@ def view_comments(id):
     comments = Comment.get_comments(id)
     return render_template('view_comments.html',comments = comments, id=id)
 
-@main.route('/onepitch/<int:id>', methods=['GET', 'POST'])
-def one_pitch(id):
+# @main.route('/onepitch/<int:id>', methods=['GET', 'POST'])
+# def one_pitch(id):
 
-    pitch = Pitch.query.get(id)
-    form = CommentForm()
-    pitch = Pitch.query.filter_by(id=id).first()
+#     pitch = Pitch.query.get(id)
+#     form = CommentForm()
+#     pitch = Pitch.query.filter_by(id=id).first()
 
-    if form.validate_on_submit():
-        # comment instance
-        new_comment = Comment(
-            ratings=0,
-            like=0,
-            dislike=0,
-            content=form.content.data,
-            time=datetime.utcnow(),
-            comments=pitch,
-            comment=current_user)
+#     if form.validate_on_submit():
+#         # comment instance
+#         new_comment = Comment(
+#             ratings=0,
+#             like=0,
+#             dislike=0,
+#             content=form.content.data,
+#             time=datetime.utcnow(),
+#             comments=pitch,
+#             comment=current_user)
 
-        # save comment
-        db.session.add(new_comment)
-        db.session.commit()
+#         # save comment
+#         db.session.add(new_comment)
+#         db.session.commit()
 
-    comments = pitch.comments_id
+#     comments = pitch.comments_id
 
-    return render_template('viewpitch.html', pitch=pitch, id=id, comment_form=form, comments=comments)
+#     return render_template('viewpitch.html', pitch=pitch, id=id, comment_form=form, comments=comments)
 
 
 # @main.route('/like/<pitch_id>')
